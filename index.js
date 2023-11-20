@@ -79,32 +79,26 @@ io.on("connection", (socket) => {
 
         let current_user_detail = clients[current_user]?.user_profile;
 
+        console.log(current_user_detail?.first_name, "removed")
 
         if (clients[current_user]) {
             delete (clients[current_user])
-        }
-
-        if(sender){
-        const recipientSocket = clients[sender];
-
-        if (recipientSocket) {
-
-            recipientSocket.emit('disconnect_trigger', current_user_detail);
-        }
-    }
-        const isSubset = [current_user, sender].every(value => current_active_user?.includes(value));
-
-
-        if (isSubset) {
 
             let user_index = current_active_user.indexOf(current_user);
-            let sender_index = current_active_user.indexOf(sender);
+            current_active_user.splice(user_index, 1);
 
-            if (user_index !== -1 && sender_index != -1) {
-                current_active_user.splice(user_index, 1);
-                current_active_user.splice(sender_index, 1)
+
+        }
+
+        if (sender) {
+            const recipientSocket = clients[sender];
+
+            if (recipientSocket) {
+                recipientSocket.emit('disconnect_trigger', current_user_detail);
             }
         }
+
+
 
         console.log("total_connect", Object.keys(clients), current_active_user)
 
