@@ -33,7 +33,7 @@ let current_active_user = [];
 
 io.on("connection", (socket) => {
 
-    socket.on('users', ({ is_security = false, token, is_tenant = false }) => {
+    socket.on('users', ({ token }) => {
 
         const user = jwt.decode(token, "JKOGzYNqgFx7GLTu");
 
@@ -41,8 +41,6 @@ io.on("connection", (socket) => {
         } else {
             clients[user?.userProfile?.[0]?.id] = socket
             socket["user_profile"] = user?.userProfile?.[0];
-            socket["is_security"] = is_security;
-            socket["is_tenant"] = is_tenant;
         }
 
         io.emit("user_connected", { connected_users: Object.keys(clients), current_active_user })
@@ -103,6 +101,10 @@ io.on("connection", (socket) => {
         console.log("total_connect", Object.keys(clients), current_active_user)
 
 
+    })
+
+    socket.on('change_request_status',(details,id)=>{
+        io.emit("change_request_status", { details,id })
     })
 
 
